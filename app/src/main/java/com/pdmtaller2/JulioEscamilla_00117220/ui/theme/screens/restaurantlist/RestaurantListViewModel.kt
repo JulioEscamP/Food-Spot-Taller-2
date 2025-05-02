@@ -1,5 +1,6 @@
 package com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.restaurantlist
 
+import android.view.MenuItem
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pdmtaller2.JulioEscamilla_00117220.data.Restaurant
@@ -12,11 +13,10 @@ import kotlinx.coroutines.launch
 
 data class RestaurantListUi(
     val allRestaurants: List<Restaurant> = emptyList(),
-    val diffCategories: List<String> = emptyList(),
+    val distinctCategories: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
-
 class RestaurantListViewModel : ViewModel() {
     private val restaurantInfo = RestaurantInfo()
     private val _uiState = MutableStateFlow(RestaurantListUi(isLoading = true))
@@ -26,7 +26,7 @@ class RestaurantListViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val fetchedRestaurants = /* restaurantRepository.getRestaurants() */ listOf<Restaurant>()
+                val fetchedRestaurants =  restaurantInfo.getAllRestaurants()
                 _uiState.update {
                     it.copy(isLoading = false, allRestaurants = fetchedRestaurants)
                 }
