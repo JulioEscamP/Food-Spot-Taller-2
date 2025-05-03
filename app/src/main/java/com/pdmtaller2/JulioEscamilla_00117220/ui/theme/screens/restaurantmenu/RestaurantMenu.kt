@@ -14,19 +14,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.pdmtaller2.JulioEscamilla_00117220.R
 import com.pdmtaller2.JulioEscamilla_00117220.data.Dish
 import com.pdmtaller2.JulioEscamilla_00117220.data.Restaurant
+import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.FoodSpotByJulioEscamillaTheme
+
 
 @Composable
 fun RestaurantMenuScreen(
     viewModel: RestaurantMenuViewModel = viewModel(),
-
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
 
     LaunchedEffect(uiState.toastMessage) {
         uiState.toastMessage?.let { message ->
@@ -35,7 +40,22 @@ fun RestaurantMenuScreen(
         }
     }
 
+    RestaurantMenuContent(
+        uiState = uiState,
+        onNavigateBack = onNavigateBack,
+        onQueryChange = viewModel::updateSearchQuery,
+        onAddToCartClick = viewModel::addToCart
+    )
+}
 
+
+@Composable
+fun RestaurantMenuContent(
+    uiState: RestaurantMenuUiState,
+    onNavigateBack: () -> Unit,
+    onQueryChange: (String) -> Unit,
+    onAddToCartClick: (Dish) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -44,56 +64,68 @@ fun RestaurantMenuScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 uiState.error != null -> {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
-                    )
+                    Text( "Ups, no se cargo la data de los restaurantes")
                 }
                 uiState.restaurant != null -> {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = uiState.restaurant?.description ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-
-                        Divider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-
+                        Text( "/* ... Descripción Restaurante ... */")
+                        Divider()
                         SearchBar(
                             query = uiState.searchQuery,
-                            onQueryChange = viewModel::updateSearchQuery,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                            onQueryChange = onQueryChange,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
                         )
-
-                        LazyColumn(
-                            modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
+                        LazyColumn {
                             items(uiState.filteredMenuItems, key = { dish -> dish.id }) { dish ->
                                 DishItem(
                                     dish = dish,
-                                    onAddToCartClick = { /* No es necesario */ }
+
+                                    onAddToCartClick = { onAddToCartClick(dish) }
                                 )
                             }
                         }
                     }
                 }
                 else -> {
-                    Text(
-                        text = "Restaurante no encontrado.",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
-                    )
+                    Text("f")
                 }
             }
         }
     }
 }
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+fun RestaurantMenuScreenPreview() {
+    val sampleDishes = listOf(
+        Dish(101, "Platillo A", "Descripción A", R.drawable.ic_launcher_foreground),
+        Dish(102, "Platillo B Largo Nombre", "Descripción B un poco más larga para probar el texto", R.drawable.ic_launcher_foreground),
+        Dish(103, "Platillo C", "Descripción C", R.drawable.ic_launcher_foreground)
+    )
+    val sampleRestaurant = Restaurant(
+        id = 99, name = "Restaurante de Preview", description = "Un lugar para previsualizar cosas deliciosas.",
+        imageResId = R.drawable.ic_launcher_background, categories = listOf("Preview"), menu = sampleDishes
+    )
+    val previewState = RestaurantMenuUiState(
+        restaurant = sampleRestaurant,
+        filteredMenuItems = sampleDishes,
+        searchQuery = "",
+        isLoading = false,
+        error = null,
+        toastMessage = null
+    )
+
+    FoodSpotByJulioEscamillaTheme{
+        RestaurantMenuContent(
+            uiState = previewState,
+            onNavigateBack = {},
+            onQueryChange = {},
+            onAddToCartClick = {}
+        )
+    }
+}
+
+
 
 
 @Composable

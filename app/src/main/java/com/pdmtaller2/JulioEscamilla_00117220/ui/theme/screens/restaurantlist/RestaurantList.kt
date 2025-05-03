@@ -26,22 +26,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pdmtaller2.JulioEscamilla_00117220.data.Restaurant
+import com.pdmtaller2.JulioEscamilla_00117220.data.Dish
+import com.pdmtaller2.JulioEscamilla_00117220.R
+import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.FoodSpotByJulioEscamillaTheme
 
 @Composable
-fun RestaurantListScreen(
-    viewModel: RestaurantListViewModel = viewModel(),
+fun RestaurantListContent(
+    uiState: RestaurantListUi,
     onRestaurantClick: (restaurantId: Int) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
@@ -63,27 +64,49 @@ fun RestaurantListScreen(
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(uiState.distinctCategories, key = { category -> category }) { category ->
-
-
                         val restaurantsInCategory = uiState.allRestaurants.filter { restaurant ->
                             val categoryList: List<String> = restaurant.categories
-                            val currentCategory: String = category.toString()
-                            val doesContain: Boolean = categoryList.contains(currentCategory)
-
-                            doesContain
+                            val currentCategory: String = category
+                            categoryList.contains(currentCategory)
                         }
 
                         if (restaurantsInCategory.isNotEmpty()) {
-                            CategoryHeader(title = category.toString())
+                            CategoryHeader(title = category)
                             RestaurantCarousel(
                                 restaurants = restaurantsInCategory,
-                                onRestaurantClick = onRestaurantClick
+                                onRestaurantClick = onRestaurantClick // Pasa la acción de clic
                             )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+fun RestaurantListScreenPreview() {
+    val sampleDish = Dish(id = 1, name = "Platillo Preview", description = "Desc", imageResId = R.drawable.ic_launcher_foreground)
+    val sampleRestaurants = listOf(
+        Restaurant(1, "Fulanitos", "Desc 1", R.drawable.ic_launcher_background, listOf("Preview", "Tipo A"), listOf(sampleDish)),
+        Restaurant(2, "Menganitos", "Desc 2", R.drawable.ic_launcher_background, listOf("Preview", "Tipo B"), listOf(sampleDish)),
+        Restaurant(3, "Sultanitos", "Desc 3", R.drawable.ic_launcher_background, listOf("Tipo A"), listOf(sampleDish))
+    )
+    val sampleCategories = sampleRestaurants.flatMap { it.categories }.distinct().sorted()
+    val previewState = RestaurantListUi(
+        allRestaurants = sampleRestaurants,
+        distinctCategories = sampleCategories,
+        isLoading = false,
+        error = null
+    )
+
+
+    FoodSpotByJulioEscamillaTheme {
+        RestaurantListContent(
+            uiState = previewState,
+            onRestaurantClick = {}
+        )
     }
 }
 

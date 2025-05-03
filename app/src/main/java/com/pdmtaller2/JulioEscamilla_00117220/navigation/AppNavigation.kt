@@ -1,9 +1,6 @@
 package com.pdmtaller2.JulioEscamilla_00117220.navigation
 
-import androidx.compose.material.icons.Icons
 
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 

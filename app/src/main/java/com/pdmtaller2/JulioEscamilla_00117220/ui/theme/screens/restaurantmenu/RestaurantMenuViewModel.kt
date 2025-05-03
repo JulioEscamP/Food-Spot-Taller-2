@@ -76,6 +76,15 @@ class RestaurantMenuViewModel(
         }
     }
 
+    fun addToCart(dish: Dish) {
+
+        val message = "${dish.name} agregado al carrito"
+
+        _uiState.update {
+            it.copy(toastMessage = message)
+        }
+    }
+
 
     fun clearToastMessage() {
         _uiState.update {
