@@ -16,6 +16,8 @@ import com.pdmtaller2.JulioEscamilla_00117220.navigation.bottomNavItems
 import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.restaurantlist.RestaurantListContent
 import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.restaurantmenu.RestaurantMenuScreen
 import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.restaurantlist.RestaurantListViewModel
+import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.orders.OrdersScreen
+import com.pdmtaller2.JulioEscamilla_00117220.ui.theme.screens.search.SearchScreen
 
 
 
@@ -83,11 +85,11 @@ fun FoodAppScreen() {
             }
 
             composable(Routes.SEARCH) {
-                /* SearchResults() */
+                SearchScreen()
             }
 
             composable(Routes.ORDERS) {
-                /* Orders() */
+                OrdersScreen()
             }
         }
     }

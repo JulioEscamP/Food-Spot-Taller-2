@@ -74,7 +74,7 @@ fun RestaurantListContent(
                             CategoryHeader(title = category)
                             RestaurantCarousel(
                                 restaurants = restaurantsInCategory,
-                                onRestaurantClick = onRestaurantClick // Pasa la acción de clic
+                                onRestaurantClick = onRestaurantClick
                             )
                         }
                     }
