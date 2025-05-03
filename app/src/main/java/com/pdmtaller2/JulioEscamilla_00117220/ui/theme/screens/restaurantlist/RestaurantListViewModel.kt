@@ -24,11 +24,20 @@ class RestaurantListViewModel : ViewModel() {
 
     fun loadRestaurants() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val fetchedRestaurants =  restaurantInfo.getAllRestaurants()
+                val fetchedRestaurants: List<Restaurant> = restaurantInfo.getAllRestaurants()
+
+                val uniqueCategories = fetchedRestaurants
+                    .flatMap { it.categories }
+                    .distinct()
+                    .sorted()
+
                 _uiState.update {
-                    it.copy(isLoading = false, allRestaurants = fetchedRestaurants)
+                    it.copy(
+                        isLoading = false,
+                        allRestaurants = fetchedRestaurants,
+                        distinctCategories = uniqueCategories
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update {
